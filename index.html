@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deprem Sensör</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #07111f;
+  color: white;
+}
+header {
+  padding: 14px;
+  background: #0d1b2a;
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+}
+.panel {
+  padding: 12px;
+}
+.card {
+  background: #132238;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+.value {
+  font-size: 34px;
+  font-weight: bold;
+}
+.safe { color: #3cff9b; }
+.warn { color: #ffd166; }
+.danger { color: #ff4d4d; }
+button {
+  width: 100%;
+  padding: 14px;
+  border: 0;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  background: #ff4d4d;
+  color: white;
+}
+#map {
+  height: 360px;
+}
+canvas {
+  width: 100%;
+  height: 120px;
+  background: #020814;
+  border-radius: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>Deprem Sensör Sistemi</header>
+
+<div class="panel">
+
+  <div class="card">
+    <div>Anlık titreşim değeri</div>
+    <div id="gvalue" class="value safe">0.00 g</div>
+    <div id="status">Durum: Normal</div>
+  </div>
+
+  <div class="card">
+    <button onclick="startSensor()">Sensörü Başlat</button>
+  </div>
+
+  <div class="card">
+    <canvas id="chart" width="600" height="160"></canvas>
+  </div>
+
+  <div class="card">
+    <b>Son Depremler</b>
+    <div id="quakeList">Yükleniyor...</div>
+  </div>
+
+</div>
+
+<div id="map"></div>
+
+<audio id="alarm">
+  <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg">
+</audio>
+
+<script>
+let map = L.map('map').setView([39.0, 35.0], 6);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 18
+}).addTo(map);
+
+let chart = document.getElementById("chart");
+let ctx = chart.getContext("2d");
+let data = [];
+let alarm = document.getElementById("alarm");
+
+function drawChart(value) {
+  data.push(value);
+  if (data.length > 120) data.shift();
+
+  ctx.clearRect(0, 0, chart.width, chart.height);
+  ctx.beginPath();
+
+  data.forEach((v, i) => {
+    let x = i * (chart.width / 120);
+    let y = chart.height - Math.min(v * 220, chart.height);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+
+  ctx.strokeStyle = "#00ffcc";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+}
+
+async function startSensor() {
+  if (typeof DeviceMotionEvent !== "undefined" &&
+      typeof DeviceMotionEvent.requestPermission === "function") {
+    const permission = await DeviceMotionEvent.requestPermission();
+    if (permission !== "granted") {
+      alert("Sensör izni verilmedi.");
+      return;
+    }
+  }
+
+  window.addEventListener("devicemotion", e => {
+    const a = e.accelerationIncludingGravity;
+    if (!a) return;
+
+    const x = a.x || 0;
+    const y = a.y || 0;
+    const z = a.z || 0;
+
+    const total = Math.sqrt(x*x + y*y + z*z);
+    const g = Math.abs(total - 9.81) / 9.81;
+
+    updateStatus(g);
+    drawChart(g);
+  });
+
+  alert("Sensör aktif. Telefonu sabit bir zemine koy.");
+}
+
+function updateStatus(g) {
+  const gvalue = document.getElementById("gvalue");
+  const status = document.getElementById("status");
+
+  gvalue.innerText = g.toFixed(2) + " g";
+
+  if (g < 0.08) {
+    gvalue.className = "value safe";
+    status.innerText = "Durum: Normal";
+  } else if (g < 0.25) {
+    gvalue.className = "value warn";
+    status.innerText = "Durum: Hafif titreşim algılandı";
+  } else {
+    gvalue.className = "value danger";
+    status.innerText = "Durum: Güçlü sarsıntı algılandı!";
+    alarm.play();
+    if (navigator.vibrate) navigator.vibrate([400, 200, 400]);
+  }
+}
+
+async function loadEarthquakes() {
+  try {
+    const res = await fetch("https://sismikharita.com/api.php?min_magnitude=2.5&limit=30");
+    const json = await res.json();
+
+    const list = document.getElementById("quakeList");
+    list.innerHTML = "";
+
+    json.earthquakes.forEach(q => {
+      L.circleMarker([q.latitude, q.longitude], {
+        radius: Math.max(5, q.magnitude * 2),
+        color: "#ff4d4d"
+      }).addTo(map)
+      .bindPopup(`
+        <b>${q.location}</b><br>
+        M${q.magnitude}<br>
+        Derinlik: ${q.depth_km} km<br>
+        Kaynak: ${q.source}
+      `);
+
+      list.innerHTML += `
+        <div style="margin-top:8px">
+          M${q.magnitude} - ${q.location}<br>
+          <small>${q.occurred_at} / ${q.depth_km} km</small>
+        </div>
+      `;
+    });
+  } catch (e) {
+    document.getElementById("quakeList").innerText = "Deprem verisi alınamadı.";
+  }
+}
+
+loadEarthquakes();
+setInterval(loadEarthquakes, 60000);
+</script>
+
+</body>
+</html>

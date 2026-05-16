@@ -7,249 +7,80 @@
 
 <style>
 *{box-sizing:border-box}
-:root{--scale:1}
+:root{--scale:.88}
 
 body{
-  margin:0;
-  background:#050505;
-  color:#f5f5f5;
+  margin:0;background:#050505;color:#f5f5f5;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
 }
+.app{transform:scale(var(--scale));transform-origin:top center;width:100%}
+.header{padding:18px 12px 14px;text-align:center;font-size:46px;font-weight:900;background:#111}
+.container{padding:10px 12px 24px}
 
-.app{
-  transform:scale(var(--scale));
-  transform-origin:top center;
-  width:100%;
-}
-
-.header{
-  padding:24px 16px 18px;
-  text-align:center;
-  font-size:clamp(34px,9vw,58px);
-  font-weight:900;
-  background:#111;
-}
-
-.container{padding:14px 16px 32px}
-
-.zoomBar{
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  gap:8px;
-  margin-bottom:14px;
-}
-
-.zoomBar button,.mainBtn,.resetBtn{
-  border:0;
-  border-radius:16px;
-  padding:14px;
-  color:white;
-  font-size:18px;
-  font-weight:900;
-}
-
-.zoomBar button{
-  background:#1b1b1b;
-  border:1px solid #333;
-}
+.zoomBar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+button{border:0;border-radius:16px;padding:14px;color:white;font-weight:900}
+.zoomBar button{background:#1b1b1b;border:1px solid #333;font-size:18px}
 
 .statusBox{
-  background:#0d2111;
-  border:1px solid #1f6b2c;
-  border-radius:24px;
-  padding:18px;
-  margin-bottom:18px;
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  align-items:center;
-  color:#4ec75e;
-  font-size:clamp(24px,6vw,42px);
-  font-weight:900;
+  background:#0d2111;border:1px solid #1f6b2c;border-radius:24px;
+  padding:18px;margin-bottom:18px;display:flex;justify-content:space-between;
+  color:#4ec75e;font-size:30px;font-weight:900;
 }
+.sectionTitle{color:#aaa;font-size:32px;font-weight:900;margin:18px 0 12px}
 
-.sectionTitle{
-  color:#aaa;
-  font-size:clamp(24px,6vw,42px);
-  font-weight:900;
-  margin:18px 0 12px;
-  letter-spacing:1px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .sensorCard{
-  background:#171717;
-  border:1px solid #303030;
-  border-radius:20px;
-  padding:14px;
-  min-height:118px;
+  background:#171717;border:1px solid #303030;border-radius:20px;
+  padding:12px;min-height:100px;
 }
+.x{border-left:7px solid #ff8a82}.y{border-left:7px solid #4fd6d2}
+.z{border-left:7px solid #ffe06b}.pga{border-left:7px solid #49c65a}
+.sensorLabel{color:#999;font-size:25px;font-weight:900}
+.sensorValue{margin-top:10px;font-size:42px;font-weight:900;line-height:1}
+.sensorSub{color:#aaa;font-size:20px;margin-top:6px}
+.green{color:#4ec75e}.orange{color:#ffad27}.red{color:#ff4d4d}
 
-.sensorCard.x{border-left:7px solid #ff8a82}
-.sensorCard.y{border-left:7px solid #4fd6d2}
-.sensorCard.z{border-left:7px solid #ffe06b}
-.sensorCard.pga{border-left:7px solid #49c65a}
-
-.sensorLabel{
-  color:#999;
-  font-size:clamp(20px,5vw,34px);
-  font-weight:900;
-}
-
-.sensorValue{
-  margin-top:12px;
-  font-size:clamp(33px,8.5vw,62px);
-  font-weight:900;
-  line-height:1;
-}
-
-.sensorSub{
-  color:#aaa;
-  font-size:clamp(17px,4vw,30px);
-  margin-top:7px;
-}
-
-.green{color:#4ec75e}
-.orange{color:#ffad27}
-.red{color:#ff4d4d}
-
-.mainBtn{
-  width:100%;
-  margin:18px 0 8px;
-  padding:20px;
-  background:#ff4d4d;
-  font-size:clamp(26px,7vw,46px);
-}
-
-.resetBtn{
-  width:100%;
-  background:#252525;
-  border:1px solid #444;
-  margin-top:8px;
-}
-
-.chartBox{
-  background:#171717;
-  border:1px solid #303030;
-  border-radius:24px;
-  padding:12px;
-}
-
-canvas{
-  width:100%;
-  height:240px;
-  display:block;
-  background:#151515;
-  border-radius:18px;
-}
-
-.legend{
-  display:flex;
-  justify-content:center;
-  gap:16px;
-  flex-wrap:wrap;
-  margin-top:14px;
-  color:#bbb;
-  font-size:clamp(18px,4.5vw,28px);
-}
-
-.dot{
-  display:inline-block;
-  width:14px;
-  height:14px;
-  border-radius:50%;
-  margin-right:7px;
-}
-
-.dx{background:#ff8a82}
-.dy{background:#4fd6d2}
-.dz{background:#ffe06b}
-
-.stats{
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  gap:8px;
-}
-
-.statCard{
-  background:#171717;
-  border:1px solid #303030;
-  border-radius:18px;
-  text-align:center;
-  padding:15px 6px;
-}
-
-.statTitle{
-  color:#999;
-  font-weight:900;
-  font-size:clamp(18px,4.5vw,28px);
-}
-
-.statValue{
-  font-size:clamp(26px,6.5vw,44px);
-  font-weight:900;
-  margin-top:8px;
-}
+.mainBtn{width:100%;margin:18px 0 8px;padding:20px;background:#ff4d4d;font-size:34px}
+.resetBtn{width:100%;background:#252525;border:1px solid #444;margin-top:8px;font-size:18px}
 
 .aiBox{
-  background:#101a2b;
-  border:1px solid #243c63;
-  border-radius:22px;
-  padding:16px;
-  line-height:1.45;
+  background:#101a2b;border:1px solid #243c63;border-radius:22px;
+  padding:16px;line-height:1.45;
 }
+.aiTitle{font-size:28px;font-weight:900;margin-bottom:8px}
+.aiText{color:#d8e3ff;font-size:20px}
 
-.aiTitle{
-  font-size:clamp(24px,6vw,38px);
-  font-weight:900;
-  margin-bottom:8px;
+.chartBox{background:#171717;border:1px solid #303030;border-radius:24px;padding:12px}
+canvas{width:100%;height:210px;display:block;background:#151515;border-radius:18px}
+.legend{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:14px;color:#bbb;font-size:20px}
+.dot{display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:7px}
+.dx{background:#ff8a82}.dy{background:#4fd6d2}.dz{background:#ffe06b}
+
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.statCard{
+  background:#171717;border:1px solid #303030;border-radius:18px;
+  text-align:center;padding:15px 6px;
 }
-
-.aiText{
-  color:#d8e3ff;
-  font-size:clamp(18px,4.5vw,28px);
-}
-
-.note{
-  color:#999;
-  font-size:clamp(15px,4vw,22px);
-  line-height:1.5;
-  margin-top:18px;
-}
-
-.compact .header{padding:18px 12px 14px}
-.compact .container{padding:10px 12px 24px}
-.compact .sensorCard{min-height:100px;padding:12px}
-.compact canvas{height:210px}
-.compact .sectionTitle{margin:15px 0 9px}
+.statTitle{color:#999;font-weight:900;font-size:20px}
+.statValue{font-size:30px;font-weight:900;margin-top:8px}
+.note{color:#999;font-size:16px;line-height:1.5;margin-top:18px}
 
 .flash{
-  position:fixed;
-  inset:0;
-  z-index:99999;
-  background:white;
-  opacity:.95;
-  pointer-events:none;
-  animation:flashAnim .7s ease-out forwards;
+  position:fixed;inset:0;z-index:99999;background:white;
+  pointer-events:none;animation:flashAnim .8s ease-out forwards;
 }
-
 @keyframes flashAnim{
-  0%{background:white;opacity:.95}
+  0%{background:white;opacity:1}
   35%{background:red;opacity:.9}
-  100%{background:white;opacity:0}
+  70%{background:white;opacity:.7}
+  100%{opacity:0}
 }
 </style>
 </head>
 
 <body>
 
-<div id="app" class="app compact">
-
+<div id="app" class="app">
   <div class="header">Akselerometre</div>
 
   <div class="container">
@@ -261,7 +92,7 @@ canvas{
     </div>
 
     <div class="statusBox">
-      <div>● <span id="mainStatus">Normal</span></div>
+      <div>● <span id="mainStatus">Beklemede</span></div>
       <div><span id="sampleCount">0</span> örnek</div>
     </div>
 
@@ -297,19 +128,14 @@ canvas{
     <button class="resetBtn" onclick="resetStats()">PGA İstatistiklerini Sıfırla</button>
 
     <div class="sectionTitle">YAPAY ZEKA ANALİZİ</div>
-
     <div class="aiBox">
       <div class="aiTitle">AI Risk Yorumu</div>
-      <div id="aiText" class="aiText">
-        Sensör beklemede. Telefonu sabit zemine koyup ölçümü başlat.
-      </div>
+      <div id="aiText" class="aiText">Sensör beklemede. Telefonu sabit zemine koyup ölçümü başlat.</div>
     </div>
 
     <div class="sectionTitle">GERÇEK ZAMANLI DALGA FORMU</div>
-
     <div class="chartBox">
       <canvas id="waveCanvas" width="700" height="300"></canvas>
-
       <div class="legend">
         <div><span class="dot dx"></span>X</div>
         <div><span class="dot dy"></span>Y</div>
@@ -318,20 +144,17 @@ canvas{
     </div>
 
     <div class="sectionTitle">PGA İSTATİSTİKLERİ</div>
-
     <div class="stats">
       <div class="statCard">
         <div class="statTitle">MIN</div>
         <div id="minVal" class="statValue">0.0000</div>
         <div class="sensorSub">g</div>
       </div>
-
       <div class="statCard">
         <div class="statTitle">MAX</div>
         <div id="maxVal" class="statValue orange">0.0000</div>
         <div class="sensorSub">g</div>
       </div>
-
       <div class="statCard">
         <div class="statTitle">NOW</div>
         <div id="nowVal" class="statValue green">0.0000</div>
@@ -340,327 +163,217 @@ canvas{
     </div>
 
     <div class="note">
-      Bu uygulama resmi deprem erken uyarı sistemi değildir. Telefonun akselerometre sensörüyle titreşim ölçer.
-      Telefon flaşı iPhone Safari’de doğrudan açılamayabilir; destek yoksa ekran flaşı çalışır.
+      Bu uygulama resmi deprem erken uyarı sistemi değildir. Telefon sensörüyle titreşim ölçer.
+      iPhone’da kamera flaşı web sayfasından açılamayabilir; bu yüzden ekran flaşı kullanılır.
     </div>
 
   </div>
 </div>
 
-<audio id="alarm" preload="auto">
-  <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg">
-</audio>
-
 <script>
-const root = document.documentElement;
-const app = document.getElementById("app");
+const root=document.documentElement;
+let zoomLevel=.88;
 
-let zoomLevel = 1;
+function applyZoom(){root.style.setProperty("--scale",zoomLevel)}
+function zoomIn(){zoomLevel=Math.min(1.25,zoomLevel+.1);applyZoom()}
+function zoomOut(){zoomLevel=Math.max(.7,zoomLevel-.1);applyZoom()}
+function fitScreen(){zoomLevel=.88;applyZoom()}
 
-function applyZoom(){
-  root.style.setProperty("--scale", zoomLevel);
+const xVal=document.getElementById("xVal");
+const yVal=document.getElementById("yVal");
+const zVal=document.getElementById("zVal");
+const pgaVal=document.getElementById("pgaVal");
+const nowVal=document.getElementById("nowVal");
+const minVal=document.getElementById("minVal");
+const maxVal=document.getElementById("maxVal");
+const mainStatus=document.getElementById("mainStatus");
+const sampleCount=document.getElementById("sampleCount");
+const aiText=document.getElementById("aiText");
+const sensorBtn=document.getElementById("sensorBtn");
+
+const canvas=document.getElementById("waveCanvas");
+const ctx=canvas.getContext("2d");
+
+let sensorActive=false;
+let xData=[],yData=[],zData=[],pgaHistory=[];
+let count=0,minPga=999,maxPga=0,lastAlarm=0;
+let audioCtx=null;
+
+function beep(){
+  try{
+    audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+    const osc=audioCtx.createOscillator();
+    const gain=audioCtx.createGain();
+    osc.type="sine";
+    osc.frequency.value=880;
+    gain.gain.value=.8;
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    setTimeout(()=>osc.stop(),700);
+  }catch(e){}
 }
 
-function zoomIn(){
-  zoomLevel = Math.min(1.35, zoomLevel + 0.1);
-  applyZoom();
+function speakAlert(text){
+  if(!("speechSynthesis" in window))return;
+  const msg=new SpeechSynthesisUtterance(text);
+  msg.lang="tr-TR";
+  msg.rate=.95;
+  msg.volume=1;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(msg);
 }
 
-function zoomOut(){
-  zoomLevel = Math.max(0.75, zoomLevel - 0.1);
-  applyZoom();
-}
-
-function fitScreen(){
-  zoomLevel = 0.88;
-  applyZoom();
-  app.classList.add("compact");
-}
-
-const xVal = document.getElementById("xVal");
-const yVal = document.getElementById("yVal");
-const zVal = document.getElementById("zVal");
-const pgaVal = document.getElementById("pgaVal");
-const nowVal = document.getElementById("nowVal");
-const minVal = document.getElementById("minVal");
-const maxVal = document.getElementById("maxVal");
-const mainStatus = document.getElementById("mainStatus");
-const sampleCount = document.getElementById("sampleCount");
-const aiText = document.getElementById("aiText");
-const alarm = document.getElementById("alarm");
-const sensorBtn = document.getElementById("sensorBtn");
-
-const canvas = document.getElementById("waveCanvas");
-const ctx = canvas.getContext("2d");
-
-let xData = [];
-let yData = [];
-let zData = [];
-let pgaHistory = [];
-
-let count = 0;
-let minPga = 999;
-let maxPga = 0;
-let lastAlarm = 0;
-
-let sensorActive = false;
-let motionHandler = null;
-
-let stream = null;
-let torchTrack = null;
-
-function pushData(arr, val, max = 70){
-  arr.push(val);
-  if(arr.length > max) arr.shift();
+function screenFlash(){
+  const f=document.createElement("div");
+  f.className="flash";
+  document.body.appendChild(f);
+  setTimeout(()=>f.remove(),850);
 }
 
 async function toggleSensor(){
-  if(sensorActive){
-    stopSensor();
-  }else{
-    await startSensor();
-  }
+  if(sensorActive){stopSensor();return;}
+  await startSensor();
 }
 
 async function startSensor(){
-  if(sensorActive) return;
+  if(sensorActive)return;
 
-  try{
-    await alarm.play();
-    alarm.pause();
-    alarm.currentTime = 0;
-  }catch(e){}
-
-  if(typeof DeviceMotionEvent !== "undefined" &&
-     typeof DeviceMotionEvent.requestPermission === "function"){
-    const permission = await DeviceMotionEvent.requestPermission();
-
-    if(permission !== "granted"){
+  if(typeof DeviceMotionEvent!=="undefined" &&
+     typeof DeviceMotionEvent.requestPermission==="function"){
+    const permission=await DeviceMotionEvent.requestPermission();
+    if(permission!=="granted"){
       alert("Sensör izni verilmedi.");
       return;
     }
   }
 
-  motionHandler = handleMotion;
-  window.addEventListener("devicemotion", motionHandler);
+  window.addEventListener("devicemotion",handleMotion);
 
-  sensorActive = true;
-  sensorBtn.innerText = "Sensörü Durdur";
-  sensorBtn.style.background = "#2f80ed";
+  sensorActive=true;
+  sensorBtn.innerText="Sensörü Durdur";
+  sensorBtn.style.background="#2f80ed";
+  mainStatus.innerText="Normal";
+  aiText.innerText="AI aktif. Telefon sabit konumdayken titreşim profili takip ediliyor.";
 
-  aiText.innerText = "AI aktif. Telefon sabit konumdayken titreşim profili takip ediliyor.";
-
-  await prepareTorch();
+  beep();
   speakAlert("Deprem sensörü aktif.");
 }
 
 function stopSensor(){
-  if(motionHandler){
-    window.removeEventListener("devicemotion", motionHandler);
-  }
-
-  sensorActive = false;
-  sensorBtn.innerText = "Sensörü Başlat";
-  sensorBtn.style.background = "#ff4d4d";
-
-  stopTorch();
-  stopSound();
-
-  mainStatus.innerText = "Durduruldu";
-  aiText.innerText = "Sensör durduruldu.";
+  window.removeEventListener("devicemotion",handleMotion);
+  sensorActive=false;
+  sensorBtn.innerText="Sensörü Başlat";
+  sensorBtn.style.background="#ff4d4d";
+  mainStatus.innerText="Durduruldu";
+  aiText.innerText="Sensör durduruldu.";
+  if("speechSynthesis" in window)speechSynthesis.cancel();
 }
 
-async function prepareTorch(){
-  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
-
-  try{
-    stream = await navigator.mediaDevices.getUserMedia({
-      video:{facingMode:"environment"},
-      audio:false
-    });
-
-    torchTrack = stream.getVideoTracks()[0];
-  }catch(e){
-    torchTrack = null;
-  }
-}
-
-async function flashTorch(){
-  try{
-    if(torchTrack){
-      const capabilities = torchTrack.getCapabilities ? torchTrack.getCapabilities() : {};
-
-      if(capabilities.torch){
-        await torchTrack.applyConstraints({advanced:[{torch:true}]});
-
-        setTimeout(async()=>{
-          try{
-            await torchTrack.applyConstraints({advanced:[{torch:false}]});
-          }catch(e){}
-        },1400);
-
-        return;
-      }
-    }
-  }catch(e){}
-
-  screenFlash();
-}
-
-function stopTorch(){
-  try{
-    if(torchTrack){
-      torchTrack.applyConstraints({advanced:[{torch:false}]});
-    }
-
-    if(stream){
-      stream.getTracks().forEach(track=>track.stop());
-    }
-  }catch(e){}
-
-  stream = null;
-  torchTrack = null;
-}
-
-function screenFlash(){
-  const flash = document.createElement("div");
-  flash.className = "flash";
-  document.body.appendChild(flash);
-
-  setTimeout(()=>{
-    flash.remove();
-  },750);
-}
-
-function speakAlert(text){
-  if(!("speechSynthesis" in window)) return;
-
-  const msg = new SpeechSynthesisUtterance(text);
-  msg.lang = "tr-TR";
-  msg.rate = 0.95;
-  msg.pitch = 1;
-  msg.volume = 1;
-
-  speechSynthesis.cancel();
-  speechSynthesis.speak(msg);
-}
-
-function stopSound(){
-  try{
-    alarm.pause();
-    alarm.currentTime = 0;
-    speechSynthesis.cancel();
-  }catch(e){}
+function pushData(arr,val,max=70){
+  arr.push(val);
+  if(arr.length>max)arr.shift();
 }
 
 function handleMotion(e){
-  if(!sensorActive) return;
+  if(!sensorActive)return;
 
-  const a = e.accelerationIncludingGravity;
-  if(!a) return;
+  const a=e.accelerationIncludingGravity;
+  if(!a)return;
 
-  const x = (a.x || 0) / 9.81;
-  const y = (a.y || 0) / 9.81;
-  const z = (a.z || 0) / 9.81;
+  const x=(a.x||0)/9.81;
+  const y=(a.y||0)/9.81;
+  const z=(a.z||0)/9.81;
 
-  const total = Math.sqrt(x*x + y*y + z*z);
-  const pga = Math.abs(total - 1);
+  const total=Math.sqrt(x*x+y*y+z*z);
+  const pga=Math.abs(total-1);
 
   count++;
-  sampleCount.innerText = count;
+  sampleCount.innerText=count;
 
-  xVal.innerText = x.toFixed(4);
-  yVal.innerText = y.toFixed(4);
-  zVal.innerText = z.toFixed(4);
-  pgaVal.innerText = pga.toFixed(4);
-  nowVal.innerText = pga.toFixed(4);
+  xVal.innerText=x.toFixed(4);
+  yVal.innerText=y.toFixed(4);
+  zVal.innerText=z.toFixed(4);
+  pgaVal.innerText=pga.toFixed(4);
+  nowVal.innerText=pga.toFixed(4);
 
-  minPga = Math.min(minPga, pga);
-  maxPga = Math.max(maxPga, pga);
+  minPga=Math.min(minPga,pga);
+  maxPga=Math.max(maxPga,pga);
 
-  minVal.innerText = minPga.toFixed(4);
-  maxVal.innerText = maxPga.toFixed(4);
+  minVal.innerText=minPga.toFixed(4);
+  maxVal.innerText=maxPga.toFixed(4);
 
-  pushData(xData, x);
-  pushData(yData, y);
-  pushData(zData, z);
-  pushData(pgaHistory, pga, 40);
+  pushData(xData,x);
+  pushData(yData,y);
+  pushData(zData,z);
+  pushData(pgaHistory,pga,40);
 
   updateStatus(pga);
-  aiAnalyze(pga);
+  aiAnalyze();
   drawWave();
 }
 
 function updateStatus(pga){
-  if(pga < 0.08){
-    mainStatus.innerText = "Normal";
-    pgaVal.className = "sensorValue green";
-    nowVal.className = "statValue green";
-  }else if(pga < 0.25){
-    mainStatus.innerText = "Titreşim";
-    pgaVal.className = "sensorValue orange";
-    nowVal.className = "statValue orange";
+  if(pga<.08){
+    mainStatus.innerText="Normal";
+    pgaVal.className="sensorValue green";
+    nowVal.className="statValue green";
+  }else if(pga<.25){
+    mainStatus.innerText="Titreşim";
+    pgaVal.className="sensorValue orange";
+    nowVal.className="statValue orange";
   }else{
-    mainStatus.innerText = "Sarsıntı";
-    pgaVal.className = "sensorValue red";
-    nowVal.className = "statValue red";
+    mainStatus.innerText="Sarsıntı";
+    pgaVal.className="sensorValue red";
+    nowVal.className="statValue red";
 
-    const now = Date.now();
-
-    if(now - lastAlarm > 5000){
-      alarm.play().catch(()=>{});
+    const now=Date.now();
+    if(now-lastAlarm>5000){
+      beep();
       speakAlert("Dikkat. Güçlü sarsıntı algılandı. Güvenli alana geçin.");
-      flashTorch();
-
-      if(navigator.vibrate){
-        navigator.vibrate([500,200,500,200,500]);
-      }
-
-      lastAlarm = now;
+      screenFlash();
+      if(navigator.vibrate)navigator.vibrate([500,200,500,200,500]);
+      lastAlarm=now;
     }
   }
 }
 
-function aiAnalyze(pga){
-  if(pgaHistory.length < 10) return;
+function aiAnalyze(){
+  if(pgaHistory.length<10)return;
 
-  const avg = pgaHistory.reduce((a,b)=>a+b,0) / pgaHistory.length;
-  const peak = Math.max(...pgaHistory);
-  const variance = pgaHistory.reduce((a,b)=>a + Math.pow(b-avg,2),0) / pgaHistory.length;
+  const avg=pgaHistory.reduce((a,b)=>a+b,0)/pgaHistory.length;
+  const peak=Math.max(...pgaHistory);
+  const variance=pgaHistory.reduce((a,b)=>a+Math.pow(b-avg,2),0)/pgaHistory.length;
 
-  if(peak < 0.08 && variance < 0.0008){
-    aiText.innerText = "AI yorumu: Ortam stabil. Deprem benzeri sürekli titreşim paterni görünmüyor.";
-  }else if(peak < 0.25){
-    aiText.innerText = "AI yorumu: Hafif titreşim algılandı. Bu hareket masa, el teması, araç veya çevresel titreşim olabilir.";
+  if(peak<.08 && variance<.0008){
+    aiText.innerText="AI yorumu: Ortam stabil. Deprem benzeri sürekli titreşim paterni görünmüyor.";
+  }else if(peak<.25){
+    aiText.innerText="AI yorumu: Hafif titreşim algılandı. El teması, masa, araç veya çevresel titreşim olabilir.";
   }else{
-    aiText.innerText = "AI yorumu: Ani ve güçlü sarsıntı algılandı. Telefon sabit zemindeyse dikkatli ol, güvenli alan kontrolü yap.";
+    aiText.innerText="AI yorumu: Ani güçlü sarsıntı algılandı. Telefon sabit zemindeyse güvenli alan kontrolü yap.";
   }
 }
 
-function drawLine(data, color, offset){
+function drawLine(data,color,offset){
   ctx.beginPath();
-
   data.forEach((v,i)=>{
-    const x = i * (canvas.width / 70);
-    const y = offset - (v * 62);
-
-    if(i === 0) ctx.moveTo(x,y);
+    const x=i*(canvas.width/70);
+    const y=offset-(v*62);
+    if(i===0)ctx.moveTo(x,y);
     else ctx.lineTo(x,y);
   });
-
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 5;
+  ctx.strokeStyle=color;
+  ctx.lineWidth=5;
   ctx.stroke();
 }
 
 function drawWave(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  ctx.strokeStyle = "rgba(255,255,255,0.07)";
-  ctx.lineWidth = 1;
+  ctx.strokeStyle="rgba(255,255,255,.07)";
+  ctx.lineWidth=1;
 
   for(let i=1;i<4;i++){
-    let y = i * canvas.height / 4;
+    let y=i*canvas.height/4;
     ctx.beginPath();
     ctx.moveTo(0,y);
     ctx.lineTo(canvas.width,y);
@@ -673,26 +386,25 @@ function drawWave(){
 }
 
 function resetStats(){
-  minPga = 999;
-  maxPga = 0;
-  count = 0;
-  pgaHistory = [];
-  xData = [];
-  yData = [];
-  zData = [];
+  count=0;
+  minPga=999;
+  maxPga=0;
+  xData=[];
+  yData=[];
+  zData=[];
+  pgaHistory=[];
 
-  sampleCount.innerText = "0";
-  minVal.innerText = "0.0000";
-  maxVal.innerText = "0.0000";
-  nowVal.innerText = "0.0000";
-  pgaVal.innerText = "0.0000";
-  xVal.innerText = "0.0000";
-  yVal.innerText = "0.0000";
-  zVal.innerText = "0.0000";
+  sampleCount.innerText="0";
+  xVal.innerText="0.0000";
+  yVal.innerText="0.0000";
+  zVal.innerText="0.0000";
+  pgaVal.innerText="0.0000";
+  nowVal.innerText="0.0000";
+  minVal.innerText="0.0000";
+  maxVal.innerText="0.0000";
 
-  mainStatus.innerText = sensorActive ? "Normal" : "Beklemede";
-  aiText.innerText = "İstatistikler sıfırlandı. Yeni ölçüm bekleniyor.";
-
+  mainStatus.innerText=sensorActive?"Normal":"Beklemede";
+  aiText.innerText="İstatistikler sıfırlandı.";
   drawWave();
 }
 

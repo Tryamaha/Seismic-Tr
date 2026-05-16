@@ -7,10 +7,7 @@
 
 <style>
 *{box-sizing:border-box}
-
-:root{
-  --scale:1;
-}
+:root{--scale:1}
 
 body{
   margin:0;
@@ -26,32 +23,28 @@ body{
 }
 
 .header{
-  padding:34px 16px 22px;
+  padding:24px 16px 18px;
   text-align:center;
-  font-size:clamp(30px,8vw,58px);
+  font-size:clamp(34px,9vw,58px);
   font-weight:900;
   background:#111;
 }
 
-.container{
-  padding:18px 18px 34px;
-}
+.container{padding:14px 16px 32px}
 
 .zoomBar{
   display:grid;
   grid-template-columns:1fr 1fr 1fr;
-  gap:10px;
-  margin-bottom:16px;
+  gap:8px;
+  margin-bottom:14px;
 }
 
-.zoomBar button,
-.mainBtn,
-.resetBtn{
+.zoomBar button,.mainBtn,.resetBtn{
   border:0;
   border-radius:16px;
-  padding:16px;
+  padding:14px;
   color:white;
-  font-size:20px;
+  font-size:18px;
   font-weight:900;
 }
 
@@ -64,8 +57,8 @@ body{
   background:#0d2111;
   border:1px solid #1f6b2c;
   border-radius:24px;
-  padding:20px;
-  margin-bottom:22px;
+  padding:18px;
+  margin-bottom:18px;
   display:flex;
   justify-content:space-between;
   gap:12px;
@@ -79,22 +72,22 @@ body{
   color:#aaa;
   font-size:clamp(24px,6vw,42px);
   font-weight:900;
-  margin:22px 0 14px;
+  margin:18px 0 12px;
   letter-spacing:1px;
 }
 
 .grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:12px;
+  gap:10px;
 }
 
 .sensorCard{
   background:#171717;
   border:1px solid #303030;
   border-radius:20px;
-  padding:17px;
-  min-height:132px;
+  padding:14px;
+  min-height:118px;
 }
 
 .sensorCard.x{border-left:7px solid #ff8a82}
@@ -109,16 +102,16 @@ body{
 }
 
 .sensorValue{
-  margin-top:14px;
-  font-size:clamp(35px,9vw,62px);
+  margin-top:12px;
+  font-size:clamp(33px,8.5vw,62px);
   font-weight:900;
   line-height:1;
 }
 
 .sensorSub{
   color:#aaa;
-  font-size:clamp(18px,4.5vw,30px);
-  margin-top:8px;
+  font-size:clamp(17px,4vw,30px);
+  margin-top:7px;
 }
 
 .green{color:#4ec75e}
@@ -127,29 +120,29 @@ body{
 
 .mainBtn{
   width:100%;
-  margin:22px 0 8px;
-  padding:22px;
+  margin:18px 0 8px;
+  padding:20px;
   background:#ff4d4d;
-  font-size:clamp(28px,7vw,46px);
+  font-size:clamp(26px,7vw,46px);
 }
 
 .resetBtn{
   width:100%;
   background:#252525;
   border:1px solid #444;
-  margin-top:10px;
+  margin-top:8px;
 }
 
 .chartBox{
   background:#171717;
   border:1px solid #303030;
   border-radius:24px;
-  padding:14px;
+  padding:12px;
 }
 
 canvas{
   width:100%;
-  height:260px;
+  height:240px;
   display:block;
   background:#151515;
   border-radius:18px;
@@ -160,7 +153,7 @@ canvas{
   justify-content:center;
   gap:16px;
   flex-wrap:wrap;
-  margin-top:16px;
+  margin-top:14px;
   color:#bbb;
   font-size:clamp(18px,4.5vw,28px);
 }
@@ -180,7 +173,7 @@ canvas{
 .stats{
   display:grid;
   grid-template-columns:1fr 1fr 1fr;
-  gap:10px;
+  gap:8px;
 }
 
 .statCard{
@@ -188,7 +181,7 @@ canvas{
   border:1px solid #303030;
   border-radius:18px;
   text-align:center;
-  padding:18px 6px;
+  padding:15px 6px;
 }
 
 .statTitle{
@@ -198,16 +191,16 @@ canvas{
 }
 
 .statValue{
-  font-size:clamp(28px,7vw,44px);
+  font-size:clamp(26px,6.5vw,44px);
   font-weight:900;
-  margin-top:10px;
+  margin-top:8px;
 }
 
 .aiBox{
   background:#101a2b;
   border:1px solid #243c63;
   border-radius:22px;
-  padding:18px;
+  padding:16px;
   line-height:1.45;
 }
 
@@ -229,25 +222,26 @@ canvas{
   margin-top:18px;
 }
 
-.compact .header{
-  padding:20px 12px 16px;
+.compact .header{padding:18px 12px 14px}
+.compact .container{padding:10px 12px 24px}
+.compact .sensorCard{min-height:100px;padding:12px}
+.compact canvas{height:210px}
+.compact .sectionTitle{margin:15px 0 9px}
+
+.flash{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  background:white;
+  opacity:.95;
+  pointer-events:none;
+  animation:flashAnim .7s ease-out forwards;
 }
 
-.compact .container{
-  padding:12px;
-}
-
-.compact .sensorCard{
-  min-height:100px;
-  padding:12px;
-}
-
-.compact canvas{
-  height:210px;
-}
-
-.compact .sectionTitle{
-  margin:16px 0 10px;
+@keyframes flashAnim{
+  0%{background:white;opacity:.95}
+  35%{background:red;opacity:.9}
+  100%{background:white;opacity:0}
 }
 </style>
 </head>
@@ -299,7 +293,7 @@ canvas{
       </div>
     </div>
 
-    <button class="mainBtn" onclick="startSensor()">Sensörü Başlat</button>
+    <button id="sensorBtn" class="mainBtn" onclick="toggleSensor()">Sensörü Başlat</button>
     <button class="resetBtn" onclick="resetStats()">PGA İstatistiklerini Sıfırla</button>
 
     <div class="sectionTitle">YAPAY ZEKA ANALİZİ</div>
@@ -347,12 +341,13 @@ canvas{
 
     <div class="note">
       Bu uygulama resmi deprem erken uyarı sistemi değildir. Telefonun akselerometre sensörüyle titreşim ölçer.
+      Telefon flaşı iPhone Safari’de doğrudan açılamayabilir; destek yoksa ekran flaşı çalışır.
     </div>
 
   </div>
 </div>
 
-<audio id="alarm">
+<audio id="alarm" preload="auto">
   <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg">
 </audio>
 
@@ -393,6 +388,7 @@ const mainStatus = document.getElementById("mainStatus");
 const sampleCount = document.getElementById("sampleCount");
 const aiText = document.getElementById("aiText");
 const alarm = document.getElementById("alarm");
+const sensorBtn = document.getElementById("sensorBtn");
 
 const canvas = document.getElementById("waveCanvas");
 const ctx = canvas.getContext("2d");
@@ -407,26 +403,159 @@ let minPga = 999;
 let maxPga = 0;
 let lastAlarm = 0;
 
+let sensorActive = false;
+let motionHandler = null;
+
+let stream = null;
+let torchTrack = null;
+
 function pushData(arr, val, max = 70){
   arr.push(val);
   if(arr.length > max) arr.shift();
 }
 
+async function toggleSensor(){
+  if(sensorActive){
+    stopSensor();
+  }else{
+    await startSensor();
+  }
+}
+
 async function startSensor(){
+  if(sensorActive) return;
+
+  try{
+    await alarm.play();
+    alarm.pause();
+    alarm.currentTime = 0;
+  }catch(e){}
+
   if(typeof DeviceMotionEvent !== "undefined" &&
      typeof DeviceMotionEvent.requestPermission === "function"){
     const permission = await DeviceMotionEvent.requestPermission();
+
     if(permission !== "granted"){
       alert("Sensör izni verilmedi.");
       return;
     }
   }
 
-  window.addEventListener("devicemotion", handleMotion);
+  motionHandler = handleMotion;
+  window.addEventListener("devicemotion", motionHandler);
+
+  sensorActive = true;
+  sensorBtn.innerText = "Sensörü Durdur";
+  sensorBtn.style.background = "#2f80ed";
+
   aiText.innerText = "AI aktif. Telefon sabit konumdayken titreşim profili takip ediliyor.";
+
+  await prepareTorch();
+  speakAlert("Deprem sensörü aktif.");
+}
+
+function stopSensor(){
+  if(motionHandler){
+    window.removeEventListener("devicemotion", motionHandler);
+  }
+
+  sensorActive = false;
+  sensorBtn.innerText = "Sensörü Başlat";
+  sensorBtn.style.background = "#ff4d4d";
+
+  stopTorch();
+  stopSound();
+
+  mainStatus.innerText = "Durduruldu";
+  aiText.innerText = "Sensör durduruldu.";
+}
+
+async function prepareTorch(){
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:"environment"},
+      audio:false
+    });
+
+    torchTrack = stream.getVideoTracks()[0];
+  }catch(e){
+    torchTrack = null;
+  }
+}
+
+async function flashTorch(){
+  try{
+    if(torchTrack){
+      const capabilities = torchTrack.getCapabilities ? torchTrack.getCapabilities() : {};
+
+      if(capabilities.torch){
+        await torchTrack.applyConstraints({advanced:[{torch:true}]});
+
+        setTimeout(async()=>{
+          try{
+            await torchTrack.applyConstraints({advanced:[{torch:false}]});
+          }catch(e){}
+        },1400);
+
+        return;
+      }
+    }
+  }catch(e){}
+
+  screenFlash();
+}
+
+function stopTorch(){
+  try{
+    if(torchTrack){
+      torchTrack.applyConstraints({advanced:[{torch:false}]});
+    }
+
+    if(stream){
+      stream.getTracks().forEach(track=>track.stop());
+    }
+  }catch(e){}
+
+  stream = null;
+  torchTrack = null;
+}
+
+function screenFlash(){
+  const flash = document.createElement("div");
+  flash.className = "flash";
+  document.body.appendChild(flash);
+
+  setTimeout(()=>{
+    flash.remove();
+  },750);
+}
+
+function speakAlert(text){
+  if(!("speechSynthesis" in window)) return;
+
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.lang = "tr-TR";
+  msg.rate = 0.95;
+  msg.pitch = 1;
+  msg.volume = 1;
+
+  speechSynthesis.cancel();
+  speechSynthesis.speak(msg);
+}
+
+function stopSound(){
+  try{
+    alarm.pause();
+    alarm.currentTime = 0;
+    speechSynthesis.cancel();
+  }catch(e){}
 }
 
 function handleMotion(e){
+  if(!sensorActive) return;
+
   const a = e.accelerationIncludingGravity;
   if(!a) return;
 
@@ -477,9 +606,16 @@ function updateStatus(pga){
     nowVal.className = "statValue red";
 
     const now = Date.now();
+
     if(now - lastAlarm > 5000){
-      alarm.play();
-      if(navigator.vibrate) navigator.vibrate([500,200,500]);
+      alarm.play().catch(()=>{});
+      speakAlert("Dikkat. Güçlü sarsıntı algılandı. Güvenli alana geçin.");
+      flashTorch();
+
+      if(navigator.vibrate){
+        navigator.vibrate([500,200,500,200,500]);
+      }
+
       lastAlarm = now;
     }
   }
@@ -504,7 +640,7 @@ function aiAnalyze(pga){
 function drawLine(data, color, offset){
   ctx.beginPath();
 
-  data.forEach((v, i)=>{
+  data.forEach((v,i)=>{
     const x = i * (canvas.width / 70);
     const y = offset - (v * 62);
 
@@ -531,9 +667,9 @@ function drawWave(){
     ctx.stroke();
   }
 
-  drawLine(xData, "#ff8a82", 78);
-  drawLine(yData, "#4fd6d2", 150);
-  drawLine(zData, "#ffe06b", 232);
+  drawLine(xData,"#ff8a82",78);
+  drawLine(yData,"#4fd6d2",150);
+  drawLine(zData,"#ffe06b",232);
 }
 
 function resetStats(){
@@ -541,11 +677,23 @@ function resetStats(){
   maxPga = 0;
   count = 0;
   pgaHistory = [];
+  xData = [];
+  yData = [];
+  zData = [];
+
   sampleCount.innerText = "0";
   minVal.innerText = "0.0000";
   maxVal.innerText = "0.0000";
   nowVal.innerText = "0.0000";
+  pgaVal.innerText = "0.0000";
+  xVal.innerText = "0.0000";
+  yVal.innerText = "0.0000";
+  zVal.innerText = "0.0000";
+
+  mainStatus.innerText = sensorActive ? "Normal" : "Beklemede";
   aiText.innerText = "İstatistikler sıfırlandı. Yeni ölçüm bekleniyor.";
+
+  drawWave();
 }
 
 fitScreen();

@@ -1,3 +1,4 @@
+<!-- V3: Deprem Sensör Sistemi + Akselerometre Paneli -->
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -6,140 +7,250 @@
 <title>Deprem Sensör Sistemi</title>
 
 <style>
-* {
-  box-sizing: border-box;
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:#050505;
+  color:#f5f5f5;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
 }
 
-body {
-  margin: 0;
-  background: #07111f;
-  color: #f5f7fb;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+.header{
+  padding:42px 18px 28px;
+  text-align:center;
+  font-size:34px;
+  font-weight:900;
+  background:#111;
 }
 
-.header {
-  background: #0d1b2a;
-  padding: 34px 16px 28px;
-  text-align: center;
-  font-size: 34px;
-  font-weight: 800;
+.container{
+  padding:22px 18px 50px;
 }
 
-.container {
-  padding: 22px 18px 40px;
+.statusBox{
+  background:#0d2111;
+  border:1px solid #1f6b2c;
+  border-radius:22px;
+  padding:22px;
+  margin-bottom:28px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  color:#4ec75e;
+  font-size:25px;
+  font-weight:800;
 }
 
-.card {
-  background: #14243a;
-  border-radius: 24px;
-  padding: 24px;
-  margin-bottom: 22px;
+.sectionTitle{
+  color:#9f9f9f;
+  font-size:22px;
+  font-weight:900;
+  margin:26px 0 14px;
+  letter-spacing:1px;
 }
 
-.label {
-  font-size: 26px;
-  color: #ffffff;
-  margin-bottom: 10px;
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
 }
 
-.value {
-  font-size: 58px;
-  font-weight: 900;
-  color: #35ff8d;
-  line-height: 1;
+.sensorCard{
+  background:#171717;
+  border:1px solid #303030;
+  border-radius:18px;
+  padding:18px;
+  min-height:118px;
 }
 
-.status {
-  margin-top: 12px;
-  font-size: 26px;
+.sensorCard.x{border-left:5px solid #ff8a82}
+.sensorCard.y{border-left:5px solid #4fd6d2}
+.sensorCard.z{border-left:5px solid #ffe06b}
+.sensorCard.pga{border-left:5px solid #49c65a}
+
+.sensorLabel{
+  color:#999;
+  font-size:20px;
+  font-weight:900;
 }
 
-button {
-  width: 100%;
-  border: none;
-  border-radius: 22px;
-  padding: 24px;
-  background: #ff4650;
-  color: white;
-  font-size: 28px;
-  font-weight: 800;
+.sensorValue{
+  margin-top:10px;
+  font-size:34px;
+  font-weight:900;
 }
 
-canvas {
-  width: 100%;
-  height: 210px;
-  background: #020814;
-  border-radius: 18px;
-  display: block;
+.sensorSub{
+  color:#aaa;
+  font-size:18px;
 }
 
-.section-title {
-  font-size: 30px;
-  font-weight: 800;
-  margin-bottom: 18px;
+.green{color:#4ec75e}
+.orange{color:#ffad27}
+.red{color:#ff4d4d}
+
+.chartBox{
+  background:#171717;
+  border:1px solid #303030;
+  border-radius:20px;
+  padding:16px;
 }
 
-.quake {
-  font-size: 25px;
-  margin-bottom: 20px;
-  line-height: 1.35;
+canvas{
+  width:100%;
+  height:270px;
+  display:block;
+  background:#151515;
+  border-radius:14px;
 }
 
-.quake small {
-  display: block;
-  color: #d6dbe6;
-  font-size: 21px;
-  margin-top: 3px;
+.legend{
+  display:flex;
+  justify-content:center;
+  gap:18px;
+  flex-wrap:wrap;
+  margin-top:18px;
+  color:#bbb;
+  font-size:17px;
 }
 
-.safe {
-  color: #35ff8d;
+.dot{
+  display:inline-block;
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  margin-right:7px;
 }
 
-.warn {
-  color: #ffb02e;
+.dx{background:#ff8a82}
+.dy{background:#4fd6d2}
+.dz{background:#ffe06b}
+
+.stats{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:12px;
 }
 
-.danger {
-  color: #ff4d4d;
+.statCard{
+  background:#171717;
+  border:1px solid #303030;
+  border-radius:18px;
+  text-align:center;
+  padding:18px 8px;
 }
 
-.footer-note {
-  color: #aeb6c5;
-  font-size: 15px;
-  line-height: 1.5;
-  padding: 0 4px;
+.statTitle{
+  color:#999;
+  font-weight:900;
+  font-size:18px;
+}
+
+.statValue{
+  font-size:25px;
+  font-weight:900;
+  margin-top:10px;
+}
+
+button{
+  width:100%;
+  margin-top:26px;
+  padding:20px;
+  border:0;
+  border-radius:18px;
+  background:#ff4d4d;
+  color:white;
+  font-size:25px;
+  font-weight:900;
+}
+
+.note{
+  color:#999;
+  font-size:14px;
+  line-height:1.5;
+  margin-top:18px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">Deprem Sensör Sistemi</div>
+<div class="header">Akselerometre</div>
 
 <div class="container">
 
-  <div class="card">
-    <div class="label">Anlık titreşim değeri</div>
-    <div id="gvalue" class="value safe">0.00 g</div>
-    <div id="status" class="status">Durum: Normal</div>
+  <div class="statusBox">
+    <div>● <span id="mainStatus">Normal</span></div>
+    <div><span id="sampleCount">0</span> örnek</div>
   </div>
 
-  <div class="card">
-    <button onclick="startSensor()">Sensörü Başlat</button>
+  <div class="sectionTitle">CANLI DEĞERLER</div>
+
+  <div class="grid">
+    <div class="sensorCard x">
+      <div class="sensorLabel">X</div>
+      <div id="xVal" class="sensorValue">0.0000</div>
+      <div class="sensorSub">Yanal</div>
+    </div>
+
+    <div class="sensorCard y">
+      <div class="sensorLabel">Y</div>
+      <div id="yVal" class="sensorValue">0.0000</div>
+      <div class="sensorSub">Boylamsal</div>
+    </div>
+
+    <div class="sensorCard z">
+      <div class="sensorLabel">Z</div>
+      <div id="zVal" class="sensorValue">0.0000</div>
+      <div class="sensorSub">Dikey</div>
+    </div>
+
+    <div class="sensorCard pga">
+      <div class="sensorLabel">PGA</div>
+      <div id="pgaVal" class="sensorValue green">0.0000</div>
+      <div class="sensorSub">g</div>
+    </div>
   </div>
 
-  <div class="card">
-    <canvas id="chart" width="700" height="260"></canvas>
+  <button onclick="startSensor()">Sensörü Başlat</button>
+
+  <div class="sectionTitle">GERÇEK ZAMANLI DALGA FORMU</div>
+
+  <div class="chartBox">
+    <canvas id="waveCanvas" width="700" height="300"></canvas>
+
+    <div class="legend">
+      <div><span class="dot dx"></span>X (Yanal)</div>
+      <div><span class="dot dy"></span>Y (Boylamsal)</div>
+      <div><span class="dot dz"></span>Z (Dikey)</div>
+    </div>
   </div>
 
-  <div class="card">
-    <div class="section-title">Son Depremler</div>
-    <div id="quakeList">Yükleniyor...</div>
+  <div class="sectionTitle">PGA İSTATİSTİKLERİ</div>
+
+  <div class="stats">
+    <div class="statCard">
+      <div class="statTitle">MIN</div>
+      <div id="minVal" class="statValue">0.0000</div>
+      <div class="sensorSub">g</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statTitle">MAX</div>
+      <div id="maxVal" class="statValue orange">0.0000</div>
+      <div class="sensorSub">g</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statTitle">NOW</div>
+      <div id="nowVal" class="statValue green">0.0000</div>
+      <div class="sensorSub">g</div>
+    </div>
   </div>
 
-  <div class="footer-note">
-    Bu uygulama resmi erken uyarı sistemi değildir. Telefon sensörüyle titreşim ölçer ve yanlış alarm verebilir.
+  <div class="note">
+    Bu uygulama resmi deprem erken uyarı sistemi değildir. Telefonun akselerometre sensörüyle titreşim ölçer.
   </div>
 
 </div>
@@ -149,129 +260,141 @@ canvas {
 </audio>
 
 <script>
-const gvalue = document.getElementById("gvalue");
-const statusText = document.getElementById("status");
+const xVal = document.getElementById("xVal");
+const yVal = document.getElementById("yVal");
+const zVal = document.getElementById("zVal");
+const pgaVal = document.getElementById("pgaVal");
+const nowVal = document.getElementById("nowVal");
+const minVal = document.getElementById("minVal");
+const maxVal = document.getElementById("maxVal");
+const mainStatus = document.getElementById("mainStatus");
+const sampleCount = document.getElementById("sampleCount");
 const alarm = document.getElementById("alarm");
 
-const canvas = document.getElementById("chart");
+const canvas = document.getElementById("waveCanvas");
 const ctx = canvas.getContext("2d");
 
-let data = [];
-let lastAlarmTime = 0;
+let xData = [];
+let yData = [];
+let zData = [];
+let count = 0;
 
-function drawChart(value) {
-  data.push(value);
-  if (data.length > 80) data.shift();
+let minPga = 999;
+let maxPga = 0;
+let lastAlarm = 0;
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  ctx.beginPath();
-  ctx.strokeStyle = "rgba(255,255,255,0.08)";
-  ctx.lineWidth = 1;
-
-  for (let i = 1; i < 4; i++) {
-    const y = i * canvas.height / 4;
-    ctx.moveTo(0, y);
-    ctx.lineTo(canvas.width, y);
-  }
-  ctx.stroke();
-
-  ctx.beginPath();
-
-  data.forEach((v, i) => {
-    const x = i * (canvas.width / 80);
-    const y = canvas.height - Math.min(v * 900, canvas.height - 8) - 4;
-
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  });
-
-  ctx.strokeStyle = "#00ffe0";
-  ctx.lineWidth = 5;
-  ctx.stroke();
+function pushData(arr, val){
+  arr.push(val);
+  if(arr.length > 70) arr.shift();
 }
 
-async function startSensor() {
-  if (
-    typeof DeviceMotionEvent !== "undefined" &&
-    typeof DeviceMotionEvent.requestPermission === "function"
-  ) {
+async function startSensor(){
+  if(typeof DeviceMotionEvent !== "undefined" &&
+     typeof DeviceMotionEvent.requestPermission === "function"){
     const permission = await DeviceMotionEvent.requestPermission();
-
-    if (permission !== "granted") {
+    if(permission !== "granted"){
       alert("Sensör izni verilmedi.");
       return;
     }
   }
 
   window.addEventListener("devicemotion", handleMotion);
-  alert("Sensör aktif. Telefonu sabit bir zemine koy.");
+  alert("Sensör aktif. Telefonu sabit zemine koy.");
 }
 
-function handleMotion(event) {
-  const a = event.accelerationIncludingGravity;
-  if (!a) return;
+function handleMotion(e){
+  const a = e.accelerationIncludingGravity;
+  if(!a) return;
 
-  const x = a.x || 0;
-  const y = a.y || 0;
-  const z = a.z || 0;
+  const x = (a.x || 0) / 9.81;
+  const y = (a.y || 0) / 9.81;
+  const z = (a.z || 0) / 9.81;
 
-  const total = Math.sqrt(x * x + y * y + z * z);
-  const g = Math.abs(total - 9.81) / 9.81;
+  const total = Math.sqrt(x*x + y*y + z*z);
+  const pga = Math.abs(total - 1);
 
-  updateStatus(g);
-  drawChart(g);
+  count++;
+  sampleCount.innerText = count;
+
+  xVal.innerText = x.toFixed(4);
+  yVal.innerText = y.toFixed(4);
+  zVal.innerText = z.toFixed(4);
+  pgaVal.innerText = pga.toFixed(4);
+  nowVal.innerText = pga.toFixed(4);
+
+  minPga = Math.min(minPga, pga);
+  maxPga = Math.max(maxPga, pga);
+
+  minVal.innerText = minPga.toFixed(4);
+  maxVal.innerText = maxPga.toFixed(4);
+
+  pushData(xData, x);
+  pushData(yData, y);
+  pushData(zData, z);
+
+  updateStatus(pga);
+  drawWave();
 }
 
-function updateStatus(g) {
-  gvalue.innerText = g.toFixed(2) + " g";
-
-  if (g < 0.08) {
-    gvalue.className = "value safe";
-    statusText.innerText = "Durum: Normal";
-  } else if (g < 0.25) {
-    gvalue.className = "value warn";
-    statusText.innerText = "Durum: Hafif titreşim";
-  } else {
-    gvalue.className = "value danger";
-    statusText.innerText = "Durum: Güçlü sarsıntı!";
+function updateStatus(pga){
+  if(pga < 0.08){
+    mainStatus.innerText = "Normal";
+    pgaVal.className = "sensorValue green";
+    nowVal.className = "statValue green";
+  }else if(pga < 0.25){
+    mainStatus.innerText = "Hafif Titreşim";
+    pgaVal.className = "sensorValue orange";
+    nowVal.className = "statValue orange";
+  }else{
+    mainStatus.innerText = "Güçlü Sarsıntı";
+    pgaVal.className = "sensorValue red";
+    nowVal.className = "statValue red";
 
     const now = Date.now();
-    if (now - lastAlarmTime > 5000) {
+    if(now - lastAlarm > 5000){
       alarm.play();
-      if (navigator.vibrate) navigator.vibrate([400, 200, 400]);
-      lastAlarmTime = now;
+      if(navigator.vibrate) navigator.vibrate([400,200,400]);
+      lastAlarm = now;
     }
   }
 }
 
-async function loadEarthquakes() {
-  const list = document.getElementById("quakeList");
+function drawLine(data, color, offset){
+  ctx.beginPath();
 
-  try {
-    const res = await fetch("https://sismikharita.com/api.php?min_magnitude=2.5&limit=20");
-    const json = await res.json();
+  data.forEach((v, i)=>{
+    const x = i * (canvas.width / 70);
+    const y = offset - (v * 70);
 
-    list.innerHTML = "";
+    if(i === 0) ctx.moveTo(x,y);
+    else ctx.lineTo(x,y);
+  });
 
-    json.earthquakes.forEach(q => {
-      list.innerHTML += `
-        <div class="quake">
-          M${q.magnitude} - ${q.location}
-          <small>${q.occurred_at} / ${q.depth_km} km</small>
-        </div>
-      `;
-    });
-
-  } catch (e) {
-    list.innerHTML = "Deprem verisi alınamadı.";
-  }
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 4;
+  ctx.stroke();
 }
 
-loadEarthquakes();
-setInterval(loadEarthquakes, 60000);
+function drawWave(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
 
-drawChart(0.01);
+  ctx.strokeStyle = "rgba(255,255,255,0.08)";
+  ctx.lineWidth = 1;
+
+  for(let i=1;i<4;i++){
+    let y = i * canvas.height / 4;
+    ctx.beginPath();
+    ctx.moveTo(0,y);
+    ctx.lineTo(canvas.width,y);
+    ctx.stroke();
+  }
+
+  drawLine(xData, "#ff8a82", 80);
+  drawLine(yData, "#4fd6d2", 150);
+  drawLine(zData, "#ffe06b", 230);
+}
+
+drawWave();
 </script>
 
 </body>

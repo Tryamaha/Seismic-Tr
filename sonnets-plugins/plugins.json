@@ -1,8 +1,8 @@
 {
-  "desc": "Sonnets / MusicFree minimal sources — Apple/YouTube Music (via GD), YouTube, SoundCloud, Bilibili, LRCLIB",
+  "desc": "Sonnets Final Pack — Apple Music / YouTube Music / Spotify / Tidal / Qobuz / Deezer + YouTube + SoundCloud + Audiomack + music video + WebDAV + lyrics",
   "plugins": [
     {
-      "name": "GD Music (Apple / YouTube Music / Spotify / Tidal / Qobuz / Deezer)",
+      "name": "GD Music — Apple / YT Music / Spotify / Tidal / Qobuz / Deezer",
       "url": "https://cdn.jsdelivr.net/gh/qwerwhr/musicfree-plugins@main/GD%E9%9F%B3%E4%B9%90%E5%8F%B0.js",
       "version": "1.0.0"
     },
@@ -17,8 +17,23 @@
       "version": "1.2.0"
     },
     {
+      "name": "Audiomack",
+      "url": "https://gitee.com/maotoumao/MusicFreePlugins/raw/v0.1/dist/audiomack/index.js",
+      "version": "0.0.2"
+    },
+    {
+      "name": "YinYueTai — Music Video",
+      "url": "https://gitee.com/maotoumao/MusicFreePlugins/raw/v0.1/dist/yinyuetai/index.js",
+      "version": "0.0.1"
+    },
+    {
       "name": "Bilibili",
       "url": "https://cdn.jsdelivr.net/gh/qwerwhr/musicfree-plugins@main/bilibili.js",
+      "version": "1.0.0"
+    },
+    {
+      "name": "WebDAV",
+      "url": "https://cdn.jsdelivr.net/gh/qwerwhr/musicfree-plugins@main/WebDAV.js",
       "version": "1.0.0"
     },
     {

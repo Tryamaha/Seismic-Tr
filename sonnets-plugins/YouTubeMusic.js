@@ -1,194 +1,196 @@
 "use strict";
-const axios = require("axios");
-
-const HOST = "music.gdstudio.xyz";
-const BASE_URL = "https://music.gdstudio.xyz/";
-const API_URL = "https://music.gdstudio.xyz/api.php";
-const TIME_URL = "https://music.gdstudio.xyz/time";
-const VERSION = "2026.08.01";
-const SOURCE = "ytmusic";
-const PLATFORM = "YouTube Music";
-
-const headers = {
-  "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1",
-  "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-  "Referer": "https://music.gdstudio.xyz/",
-  "X-Requested-With": "XMLHttpRequest",
-  "Accept": "application/json, text/javascript, */*; q=0.01",
-  "Origin": "https://music.gdstudio.xyz"
-};
-
-function strictEncode(value) {
-  return encodeURIComponent(String(value)).replace(/[!'()*]/g, c =>
-    "%" + c.charCodeAt(0).toString(16).toUpperCase()
-  );
-}
-
-function normalizeVersion(v) {
-  return v.split(".").map(x => x.length === 1 ? "0" + x : x).join("");
-}
-
-async function serverTime() {
-  try {
-    const r = await axios.get(TIME_URL, { timeout: 8000 });
-    const t = String(r.data || "").trim();
-    if (t) return t;
-  } catch (_) {}
-  return String(Math.floor(Date.now() / 1000));
-}
-
-async function sign(payload) {
-  const t = await serverTime();
-  const input = String(t).slice(0, 9) + "|" + HOST + "|" + normalizeVersion(VERSION) + "|" + payload;
-  return CryptoJs.MD5(input).toString(CryptoJs.enc.Hex).slice(-8).toUpperCase();
-}
-
-function formBody(obj) {
-  return Object.keys(obj).map(k => encodeURIComponent(k) + "=" + encodeURIComponent(String(obj[k]))).join("&");
-}
-
-async function postApi(data) {
-  const r = await axios.post(API_URL, formBody(data), { headers, timeout: 12000 });
-  return r.data;
-}
-
-function artworkFrom(item) {
-  const p = item && item.pic_id;
-  if (!p) return null;
-  if (SOURCE === "apple" && String(p).includes("{w}")) {
-    return String(p).replace("{w}", "500").replace("{h}", "500");
-  }
-  return null;
-}
-
+Object.defineProperty(exports, "__esModule", { value: true });
+const axios_1 = require("axios");
 function formatMusicItem(item) {
-  return {
-    id: String(item.id || item.url_id || ""),
-    title: item.name || "",
-    artist: Array.isArray(item.artist) ? item.artist.join("/") : (item.artist || ""),
-    album: item.album || "",
-    artwork: artworkFrom(item),
-    source: item.source || SOURCE,
-    qualities: {
-      "128k": { size: null },
-      "192k": { size: null },
-      "320k": { size: null },
-      "flac": { size: null },
-      "hires": { size: null }
-    },
-    _rawData: item
-  };
-}
-
-async function search(query, page = 1, type) {
-  if (type !== "music") return { isEnd: true, data: [] };
-  const q = String(query || "").trim();
-  if (!q) return { isEnd: true, data: [] };
-
-  try {
-    const data = await postApi({
-      types: "search",
-      count: "20",
-      pages: String(page || 1),
-      name: q,
-      s: await sign(strictEncode(q)),
-      source: SOURCE
-    });
-
-    if (!Array.isArray(data)) return { isEnd: true, data: [] };
-
+    var _a, _b, _c, _d, _e, _f, _g;
     return {
-      isEnd: data.length < 20,
-      data: data.map(formatMusicItem)
+        id: item.videoId,
+        title: (_b = (_a = item.title.runs) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.text,
+        artist: (_d = (_c = item.ownerText.runs) === null || _c === void 0 ? void 0 : _c[0]) === null || _d === void 0 ? void 0 : _d.text,
+        artwork: (_g = (_f = (_e = item === null || item === void 0 ? void 0 : item.thumbnail) === null || _e === void 0 ? void 0 : _e.thumbnails) === null || _f === void 0 ? void 0 : _f[0]) === null || _g === void 0 ? void 0 : _g.url,
     };
-  } catch (e) {
-    console.error("[" + PLATFORM + "] search error:", e && e.message ? e.message : e);
-    return { isEnd: true, data: [] };
-  }
 }
-
+let lastQuery;
+let musicContinToken;
+async function searchMusic(query, page) {
+    if (query !== lastQuery || page === 1) {
+        musicContinToken = undefined;
+    }
+    lastQuery = query;
+    let data = JSON.stringify({
+        context: {
+            client: {
+                hl: "zh-CN",
+                gl: "US",
+                deviceMake: "",
+                deviceModel: "",
+                userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0,gzip(gfe)",
+                clientName: "WEB",
+                clientVersion: "2.20231121.08.00",
+                osName: "Windows",
+                osVersion: "10.0",
+                platform: "DESKTOP",
+                userInterfaceTheme: "USER_INTERFACE_THEME_LIGHT",
+                browserName: "Edge Chromium",
+                browserVersion: "119.0.0.0",
+                acceptHeader: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                screenWidthPoints: 1358,
+                screenHeightPoints: 1012,
+                screenPixelDensity: 1,
+                screenDensityFloat: 1.2395833730697632,
+                utcOffsetMinutes: 480,
+                memoryTotalKbytes: "8000000",
+                mainAppWebInfo: {
+                    pwaInstallabilityStatus: "PWA_INSTALLABILITY_STATUS_UNKNOWN",
+                    webDisplayMode: "WEB_DISPLAY_MODE_BROWSER",
+                    isWebNativeShareAvailable: true,
+                },
+                timeZone: "Asia/Shanghai",
+            },
+            user: {
+                lockedSafetyMode: false,
+            },
+            request: {
+                useSsl: true,
+                internalExperimentFlags: [],
+            },
+        },
+        query: musicContinToken ? undefined : query,
+        continuation: musicContinToken || undefined,
+    });
+    var config = {
+        method: "post",
+        url: "https://www.youtube.com/youtubei/v1/search?prettyPrint=false",
+        headers: {
+            "Content-Type": "text/plain",
+        },
+        data: data,
+    };
+    const response = (await (0, axios_1.default)(config)).data;
+    const contents = response.contents.twoColumnSearchResultsRenderer.primaryContents
+        .sectionListRenderer.contents;
+    const isEndItem = contents.find((it) => {
+        var _a, _b, _c;
+        return ((_c = (_b = (_a = it.continuationItemRenderer) === null || _a === void 0 ? void 0 : _a.continuationEndpoint) === null || _b === void 0 ? void 0 : _b.continuationCommand) === null || _c === void 0 ? void 0 : _c.request) === "CONTINUATION_REQUEST_TYPE_SEARCH";
+    });
+    if (isEndItem) {
+        musicContinToken =
+            isEndItem.continuationItemRenderer.continuationEndpoint
+                .continuationCommand.token;
+    }
+    const musicData = contents.find((it) => it.itemSectionRenderer)
+        .itemSectionRenderer.contents;
+    let resultMusicData = [];
+    for (let i = 0; i < musicData.length; ++i) {
+        if (musicData[i].videoRenderer) {
+            resultMusicData.push(formatMusicItem(musicData[i].videoRenderer));
+        }
+    }
+    return {
+        isEnd: !isEndItem,
+        data: resultMusicData,
+    };
+}
+async function search(query, page, type) {
+    if (type === "music") {
+        return await searchMusic(query, page);
+    }
+}
+let cacheMediaSource = {
+    id: null,
+    urls: {},
+};
+function getQuality(label) {
+    if (label === "small") {
+        return "standard";
+    }
+    else if (label === "tiny") {
+        return "low";
+    }
+    else if (label === "medium") {
+        return "high";
+    }
+    else if (label === "large") {
+        return "super";
+    }
+    else {
+        return "standard";
+    }
+}
 async function getMediaSource(musicItem, quality) {
-  const raw = musicItem._rawData || {};
-  const id = String(raw.url_id || musicItem.id || "");
-  const src = raw.source || musicItem.source || SOURCE;
-  if (!id) return null;
-
-  const qualityMap = { "128k": "128", "192k": "192", "320k": "320", "flac": "740", "hires": "999" };
-  const br = qualityMap[quality] || "320";
-
-  try {
-    const data = await postApi({
-      types: "url",
-      id,
-      source: src,
-      br,
-      s: await sign(strictEncode(id))
+    var _a, _b;
+    if (musicItem.id === cacheMediaSource.id) {
+        return {
+            url: cacheMediaSource.urls[quality],
+        };
+    }
+    cacheMediaSource = {
+        id: null,
+        urls: {},
+    };
+    const data = {
+        context: {
+            client: {
+                screenWidthPoints: 689,
+                screenHeightPoints: 963,
+                screenPixelDensity: 1,
+                utcOffsetMinutes: 120,
+                hl: "en",
+                gl: "GB",
+                remoteHost: "1.1.1.1",
+                deviceMake: "",
+                deviceModel: "",
+                userAgent: "com.google.android.apps.youtube.music/6.14.50 (Linux; U; Android 13; GB) gzip",
+                clientName: "ANDROID_MUSIC",
+                clientVersion: "6.14.50",
+                osName: "Android",
+                osVersion: "13",
+                originalUrl: "https://www.youtube.com/tv?is_account_switch=1&hrld=1&fltor=1",
+                theme: "CLASSIC",
+                platform: "MOBILE",
+                clientFormFactor: "UNKNOWN_FORM_FACTOR",
+                webpSupport: false,
+                timeZone: "Europe/Amsterdam",
+                acceptHeader: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+            },
+            user: { enableSafetyMode: false },
+            request: {
+                internalExperimentFlags: [],
+                consistencyTokenJars: [],
+            },
+        },
+        contentCheckOk: true,
+        racyCheckOk: true,
+        video_id: musicItem.id,
+    };
+    var config = {
+        method: "post",
+        url: "https://www.youtube.com/youtubei/v1/player?prettyPrint=false",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        data: JSON.stringify(data),
+    };
+    const result = (await (0, axios_1.default)(config)).data;
+    const formats = (_a = result.streamingData.formats) !== null && _a !== void 0 ? _a : [];
+    const adaptiveFormats = (_b = result.streamingData.adaptiveFormats) !== null && _b !== void 0 ? _b : [];
+    [...formats, ...adaptiveFormats].forEach((it) => {
+        const q = getQuality(it.quality);
+        if (q && it.url && !cacheMediaSource.urls[q]) {
+            cacheMediaSource.urls[q] = it.url;
+        }
     });
-    if (!data || !data.url) return null;
-    let url = String(data.url);
-    if (!/^https?:\/\//i.test(url)) url = BASE_URL + url.replace(/^\//, "");
-    return { url };
-  } catch (e) {
-    console.error("[" + PLATFORM + "] media error:", e && e.message ? e.message : e);
-    return null;
-  }
+    return {
+        url: cacheMediaSource.urls[quality],
+    };
 }
-
-async function getLyric(musicItem) {
-  const raw = musicItem._rawData || {};
-  const id = String(raw.lyric_id || "");
-  const src = raw.source || musicItem.source || SOURCE;
-  if (!id) return null;
-
-  try {
-    const data = await postApi({
-      types: "lyric",
-      id,
-      source: src,
-      s: await sign(strictEncode(id))
-    });
-    if (!data) return null;
-    let rawLrc = data.lyric || "";
-    if (data.tlyric) rawLrc += "\n" + data.tlyric;
-    return rawLrc ? { rawLrc } : null;
-  } catch (_) {
-    return null;
-  }
-}
-
-async function getMusicInfo(musicItem) {
-  const raw = musicItem._rawData || {};
-  const direct = artworkFrom(raw);
-  if (direct) return { artwork: direct };
-
-  const picId = raw.pic_id;
-  if (!picId) return {};
-  const src = raw.source || musicItem.source || SOURCE;
-
-  try {
-    const data = await postApi({
-      types: "pic",
-      id: String(picId),
-      source: src,
-      size: "500",
-      s: await sign(strictEncode(String(picId)))
-    });
-    return data && data.url ? { artwork: data.url } : {};
-  } catch (_) {
-    return {};
-  }
-}
-
 module.exports = {
-  platform: PLATFORM,
-  author: "Toskysun / Sonnets fix",
-  version: "1.1.0",
-  srcUrl: "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/YouTubeMusic.js",
-  cacheControl: "no-cache",
-  description: PLATFORM + " source for Sonnets using GD Studio's current signed API.",
-  supportedSearchType: ["music"],
-  search,
-  getMediaSource,
-  getLyric,
-  getMusicInfo
+    platform: "YouTube Music",
+    author: '猫头猫 / Sonnets',
+    version: "1.2.0",
+    description: "YouTube Music araması ve oynatma. Çalışan YouTube/MusicFree eklentisi temel alınmıştır.",\n    supportedSearchType: ["music"],
+    srcUrl: "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/YouTubeMusic.js",
+    cacheControl: "no-cache",
+    search,
+    getMediaSource,
 };

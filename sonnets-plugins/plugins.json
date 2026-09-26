@@ -1,0 +1,30 @@
+{
+  "desc": "Sonnets / MusicFree minimal sources — Apple/YouTube Music (via GD), YouTube, SoundCloud, Bilibili, LRCLIB",
+  "plugins": [
+    {
+      "name": "GD Music (Apple / YouTube Music / Spotify / Tidal / Qobuz / Deezer)",
+      "url": "https://cdn.jsdelivr.net/gh/qwerwhr/musicfree-plugins@main/GD%E9%9F%B3%E4%B9%90%E5%8F%B0.js",
+      "version": "1.0.0"
+    },
+    {
+      "name": "YouTube",
+      "url": "https://cdn.jsdelivr.net/gh/qwerwhr/musicfree-plugins@main/Youtube.js",
+      "version": "1.0.0"
+    },
+    {
+      "name": "SoundCloud",
+      "url": "https://raw.githubusercontent.com/moonopposite/claw-plugins/master/soundcloud.js",
+      "version": "1.2.0"
+    },
+    {
+      "name": "Bilibili",
+      "url": "https://cdn.jsdelivr.net/gh/qwerwhr/musicfree-plugins@main/bilibili.js",
+      "version": "1.0.0"
+    },
+    {
+      "name": "LRCLIB Lyrics",
+      "url": "https://raw.githubusercontent.com/moonopposite/claw-plugins/master/lrclib.js",
+      "version": "1.0.0"
+    }
+  ]
+}

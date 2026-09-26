@@ -1,6 +1,36 @@
 {
-  "desc": "Sonnets Final Pack — Apple Music / YouTube Music / Spotify / Tidal / Qobuz / Deezer + YouTube + SoundCloud + Audiomack + music video + WebDAV + lyrics",
+  "desc": "Sonnets Final Pack — separate Apple Music / YouTube Music / Spotify / Tidal / Qobuz / Deezer + YouTube + SoundCloud + Audiomack + music video + WebDAV + lyrics",
   "plugins": [
+    {
+      "name": "Apple Music",
+      "url": "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/AppleMusic.js",
+      "version": "1.0.1"
+    },
+    {
+      "name": "YouTube Music",
+      "url": "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/YouTubeMusic.js",
+      "version": "1.0.1"
+    },
+    {
+      "name": "Spotify",
+      "url": "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/Spotify.js",
+      "version": "1.0.1"
+    },
+    {
+      "name": "Tidal",
+      "url": "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/Tidal.js",
+      "version": "1.0.1"
+    },
+    {
+      "name": "Qobuz",
+      "url": "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/Qobuz.js",
+      "version": "1.0.1"
+    },
+    {
+      "name": "Deezer",
+      "url": "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/Deezer.js",
+      "version": "1.0.1"
+    },
     {
       "name": "GD Music — Apple / YT Music / Spotify / Tidal / Qobuz / Deezer",
       "url": "https://cdn.jsdelivr.net/gh/qwerwhr/musicfree-plugins@main/GD%E9%9F%B3%E4%B9%90%E5%8F%B0.js",

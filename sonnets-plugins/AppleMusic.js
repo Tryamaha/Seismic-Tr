@@ -1,384 +1,194 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const axios_1 = require("axios");
+const axios = require("axios");
 
-const BASE_API = "https://music-api.gdstudio.xyz/api.php?btwaf=99801110";
-const picUrl = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzQyYTVmNSIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1zaXplPSIyNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5HRDwvdGV4dD48L3N2Zz4=";
+const HOST = "music.gdstudio.xyz";
+const BASE_URL = "https://music.gdstudio.xyz/";
+const API_URL = "https://music.gdstudio.xyz/api.php";
+const TIME_URL = "https://music.gdstudio.xyz/time";
+const VERSION = "2026.08.01";
+const SOURCE = "apple";
+const PLATFORM = "Apple Music";
 
+const headers = {
+  "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1",
+  "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+  "Referer": "https://music.gdstudio.xyz/",
+  "X-Requested-With": "XMLHttpRequest",
+  "Accept": "application/json, text/javascript, */*; q=0.01",
+  "Origin": "https://music.gdstudio.xyz"
+};
 
-// Fixed music source for Sonnets
-function getMusicSource() {
-    return 'apple';
+function strictEncode(value) {
+  return encodeURIComponent(String(value)).replace(/[!'()*]/g, c =>
+    "%" + c.charCodeAt(0).toString(16).toUpperCase()
+  );
 }
 
-
-// Get artwork URL from pic_id
-async function getArtworkUrl(pic_id, source) {
-    if (!pic_id) return null;
-
-    try {
-        const response = await axios_1.default.get(BASE_API, {
-            params: {
-                types: 'pic',
-                source: source,
-                id: pic_id,
-                size: 500
-            },
-            timeout: 5000
-        });
-
-        return response.data?.url || null;
-    } catch (error) {
-        console.error('[GD Studio] Get artwork error:', error.message);
-        return null;
-    }
+function normalizeVersion(v) {
+  return v.split(".").map(x => x.length === 1 ? "0" + x : x).join("");
 }
 
-// Format music item
-function formatMusicItem(item, source) {
-    return {
-        id: item.id,
-        title: item.name,
-        artist: Array.isArray(item.artist) ? item.artist.join('/') : item.artist,
-        album: item.album,
-        artwork: picUrl,
-        source: source,
-        qualities: {
-            '128k': { size: null },
-            '192k': { size: null },
-            '320k': { size: null },
-            'flac': { size: null },
-            'hires': { size: null }
-        },
-        _rawData: {
-            ...item,
-            pic_id: item.pic_id
-        }
-    };
+async function serverTime() {
+  try {
+    const r = await axios.get(TIME_URL, { timeout: 8000 });
+    const t = String(r.data || "").trim();
+    if (t) return t;
+  } catch (_) {}
+  return String(Math.floor(Date.now() / 1000));
 }
 
-
-// Format album item
-function formatAlbumItem(item, source) {
-    return {
-        id: item.id,
-        title: item.name,
-        artist: Array.isArray(item.artist) ? item.artist.join('/') : item.artist,
-        artwork: picUrl,
-        description: '',
-        source: source,
-        _rawData: {
-            ...item,
-            pic_id: item.pic_id
-        }
-    };
+async function sign(payload) {
+  const t = await serverTime();
+  const input = String(t).slice(0, 9) + "|" + HOST + "|" + normalizeVersion(VERSION) + "|" + payload;
+  return CryptoJs.MD5(input).toString(CryptoJs.enc.Hex).slice(-8).toUpperCase();
 }
 
-// Format artist item
-function formatArtistItem(item, source) {
-    return {
-        id: item.id,
-        name: item.name,
-        avatar: picUrl,
-        description: '',
-        source: source,
-        _rawData: item
-    };
+function formBody(obj) {
+  return Object.keys(obj).map(k => encodeURIComponent(k) + "=" + encodeURIComponent(String(obj[k]))).join("&");
 }
 
-// Search music/album/artist
+async function postApi(data) {
+  const r = await axios.post(API_URL, formBody(data), { headers, timeout: 12000 });
+  return r.data;
+}
+
+function artworkFrom(item) {
+  const p = item && item.pic_id;
+  if (!p) return null;
+  if (SOURCE === "apple" && String(p).includes("{w}")) {
+    return String(p).replace("{w}", "500").replace("{h}", "500");
+  }
+  return null;
+}
+
+function formatMusicItem(item) {
+  return {
+    id: String(item.id || item.url_id || ""),
+    title: item.name || "",
+    artist: Array.isArray(item.artist) ? item.artist.join("/") : (item.artist || ""),
+    album: item.album || "",
+    artwork: artworkFrom(item),
+    source: item.source || SOURCE,
+    qualities: {
+      "128k": { size: null },
+      "192k": { size: null },
+      "320k": { size: null },
+      "flac": { size: null },
+      "hires": { size: null }
+    },
+    _rawData: item
+  };
+}
+
 async function search(query, page = 1, type) {
-    const musicSource = getMusicSource();
+  if (type !== "music") return { isEnd: true, data: [] };
+  const q = String(query || "").trim();
+  if (!q) return { isEnd: true, data: [] };
 
-    let searchSource = musicSource;
-    let pageSize = 20;
-    let formatter = formatMusicItem;
+  try {
+    const data = await postApi({
+      types: "search",
+      count: "20",
+      pages: String(page || 1),
+      name: q,
+      s: await sign(strictEncode(q)),
+      source: SOURCE
+    });
 
-    if (type === 'album') {
-        searchSource = `${musicSource}_album`;
-        pageSize = 20;
-        formatter = formatAlbumItem;
-    } else if (type === 'artist') {
-        searchSource = `${musicSource}_artist`;
-        pageSize = 20;
-        formatter = formatArtistItem;
-    } else if (type !== 'music') {
-        return { isEnd: true, data: [] };
-    }
+    if (!Array.isArray(data)) return { isEnd: true, data: [] };
 
-    try {
-        const response = await axios_1.default.get(BASE_API, {
-            params: {
-                types: 'search',
-                source: searchSource,
-                name: query,
-                count: pageSize,
-                pages: page
-            },
-            timeout: 10000
-        });
-
-        const data = response.data;
-
-        if (!Array.isArray(data)) {
-            return { isEnd: true, data: [] };
-        }
-
-        return {
-            isEnd: data.length < pageSize,
-            data: data.map(item => formatter(item, musicSource))
-        };
-    } catch (error) {
-        console.error(`[GD Studio] Search ${type} error:`, error.message);
-        return { isEnd: true, data: [] };
-    }
-}
-
-
-// Get media source (play URL)
-async function getMediaSource(musicItem, quality) {
-    const source = musicItem.source || getMusicSource();
-    const trackId = musicItem.id;
-
-    const qualityMap = {
-        '128k': '128',
-        '192k': '192',
-        '320k': '320',
-        'flac': '740',
-        'hires': '999'
-    };
-
-    const br = qualityMap[quality] || '320';
-
-    try {
-        const response = await axios_1.default.get(BASE_API, {
-            params: {
-                types: 'url',
-                source: source,
-                id: trackId,
-                br: br
-            },
-            timeout: 10000
-        });
-
-        const data = response.data;
-
-        if (!data || !data.url) {
-            return null;
-        }
-
-        return {
-            url: data.url
-        };
-    } catch (error) {
-        console.error('[GD Studio] Get media source error:', error.message);
-        return null;
-    }
-}
-
-
-// Get lyric
-async function getLyric(musicItem) {
-    const source = musicItem.source || getMusicSource();
-    const lyricId = musicItem._rawData?.lyric_id || musicItem.id;
-
-    try {
-        const response = await axios_1.default.get(BASE_API, {
-            params: {
-                types: 'lyric',
-                source: source,
-                id: lyricId
-            },
-            timeout: 10000
-        });
-
-        const data = response.data;
-
-        if (!data) {
-            return null;
-        }
-
-        let rawLrc = data.lyric || '';
-
-        // Add translation if available
-        if (data.tlyric) {
-            rawLrc += '\n' + data.tlyric;
-        }
-
-        return {
-            rawLrc: rawLrc
-        };
-    } catch (error) {
-        console.error('[GD Studio] Get lyric error:', error.message);
-        return null;
-    }
-}
-
-
-// Get album info
-async function getAlbumInfo(albumItem, page = 1) {
-    const source = albumItem.source || getMusicSource();
-    const albumName = albumItem.title || albumItem.name;
-
-    try {
-        const response = await axios_1.default.get(BASE_API, {
-            params: {
-                types: 'search',
-                source: `${source}_album`,
-                name: albumName,
-                count: 50,
-                pages: page
-            },
-            timeout: 10000
-        });
-
-        const data = response.data;
-
-        if (!Array.isArray(data)) {
-            return { isEnd: true, musicList: [] };
-        }
-
-        return {
-            isEnd: data.length < 50,
-            musicList: data.map(item => formatMusicItem(item, source))
-        };
-    } catch (error) {
-        console.error('[GD Studio] Get album info error:', error.message);
-        return { isEnd: true, musicList: [] };
-    }
-}
-
-
-// Get music info (fetch real artwork when needed)
-async function getMusicInfo(musicItem) {
-    const source = musicItem.source || getMusicSource();
-    const picId = musicItem._rawData?.pic_id;
-
-    if (!picId) {
-        return { artwork: picUrl };
-    }
-
-    const artworkUrl = await getArtworkUrl(picId, source);
     return {
-        artwork: artworkUrl || picUrl
+      isEnd: data.length < 20,
+      data: data.map(formatMusicItem)
     };
-}
-
-
-// Get artist works
-async function getArtistWorks(artistItem, page = 1, type) {
-    const source = artistItem.source || getMusicSource();
-    const artistId = artistItem.id;
-
-    if (type === 'music') {
-        try {
-            const response = await axios_1.default.get(BASE_API, {
-                params: {
-                    types: 'search',
-                    source: source,
-                    name: artistItem.name,
-                    count: 50,
-                    pages: page
-                },
-                timeout: 10000
-            });
-
-            const data = response.data;
-
-            if (!Array.isArray(data)) {
-                return { isEnd: true, data: [] };
-            }
-
-            return {
-                isEnd: data.length < 50,
-                data: data.map(item => formatMusicItem(item, source))
-            };
-        } catch (error) {
-            console.error('[GD Studio] Get artist music error:', error.message);
-            return { isEnd: true, data: [] };
-        }
-    } else if (type === 'album') {
-        try {
-            const response = await axios_1.default.get(BASE_API, {
-                params: {
-                    types: 'search',
-                    source: `${source}_album`,
-                    name: artistItem.name,
-                    count: 30,
-                    pages: page
-                },
-                timeout: 10000
-            });
-
-            const data = response.data;
-
-            if (!Array.isArray(data)) {
-                return { isEnd: true, data: [] };
-            }
-
-            return {
-                isEnd: data.length < 30,
-                data: data.map(item => formatAlbumItem(item, source))
-            };
-        } catch (error) {
-            console.error('[GD Studio] Get artist albums error:', error.message);
-            return { isEnd: true, data: [] };
-        }
-    }
-
+  } catch (e) {
+    console.error("[" + PLATFORM + "] search error:", e && e.message ? e.message : e);
     return { isEnd: true, data: [] };
+  }
 }
 
+async function getMediaSource(musicItem, quality) {
+  const raw = musicItem._rawData || {};
+  const id = String(raw.url_id || musicItem.id || "");
+  const src = raw.source || musicItem.source || SOURCE;
+  if (!id) return null;
 
-// Module exports
+  const qualityMap = { "128k": "128", "192k": "192", "320k": "320", "flac": "740", "hires": "999" };
+  const br = qualityMap[quality] || "320";
+
+  try {
+    const data = await postApi({
+      types: "url",
+      id,
+      source: src,
+      br,
+      s: await sign(strictEncode(id))
+    });
+    if (!data || !data.url) return null;
+    let url = String(data.url);
+    if (!/^https?:\/\//i.test(url)) url = BASE_URL + url.replace(/^\//, "");
+    return { url };
+  } catch (e) {
+    console.error("[" + PLATFORM + "] media error:", e && e.message ? e.message : e);
+    return null;
+  }
+}
+
+async function getLyric(musicItem) {
+  const raw = musicItem._rawData || {};
+  const id = String(raw.lyric_id || "");
+  const src = raw.source || musicItem.source || SOURCE;
+  if (!id) return null;
+
+  try {
+    const data = await postApi({
+      types: "lyric",
+      id,
+      source: src,
+      s: await sign(strictEncode(id))
+    });
+    if (!data) return null;
+    let rawLrc = data.lyric || "";
+    if (data.tlyric) rawLrc += "\n" + data.tlyric;
+    return rawLrc ? { rawLrc } : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+async function getMusicInfo(musicItem) {
+  const raw = musicItem._rawData || {};
+  const direct = artworkFrom(raw);
+  if (direct) return { artwork: direct };
+
+  const picId = raw.pic_id;
+  if (!picId) return {};
+  const src = raw.source || musicItem.source || SOURCE;
+
+  try {
+    const data = await postApi({
+      types: "pic",
+      id: String(picId),
+      source: src,
+      size: "500",
+      s: await sign(strictEncode(String(picId)))
+    });
+    return data && data.url ? { artwork: data.url } : {};
+  } catch (_) {
+    return {};
+  }
+}
+
 module.exports = {
-    platform: "Apple Music",
-    author: 'Toskysun',
-    version: "1.0.1",
-    srcUrl: "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/AppleMusic.js",
-    cacheControl: "no-cache",
-    description: "GD音乐台 API 插件\n\n" +
-        "数据来源：GD音乐台 (music.gdstudio.xyz)\n" +
-        "感谢 GD Studio 提供的音乐API服务\n" +
-        "基于开源项目 Meting & MKOnlineMusicPlayer\n\n" +
-        "使用须知：\n" +
-        "本插件仅供学习交流使用，请勿用于商业用途\n" +
-        "数据来自网络，仅限学习参考，严禁下载、传播或商用\n" +
-        "API访问频率限制：5分钟内不超过60次请求\n" +
-        "搜索列表使用默认封面以减少API请求，播放时显示真实封面\n" +
-        "若使用本插件，请注明出处\"GD音乐台(music.gdstudio.xyz)\"\n" +
-        "如遇问题可QQ私信：473560795\n\n" +
-        "支持的音乐源（共13个平台）：\n\n" +
-        "稳定音乐源（推荐）：\n" +
-        "netease - 网易云音乐\n" +
-        "kuwo - 酷我音乐\n" +
-        "joox - JOOX音乐\n\n" +
-        "其他音乐源：\n" +
-        "tencent - QQ音乐\n" +
-        "migu - 咪咕音乐\n" +
-        "kugou - 酷狗音乐\n" +
-        "ximalaya - 喜马拉雅\n" +
-        "apple - Apple Music\n" +
-        "tidal - Tidal\n" +
-        "spotify - Spotify\n" +
-        "ytmusic - YouTube Music\n" +
-        "qobuz - Qobuz\n" +
-        "deezer - Deezer\n\n" +
-        "注意：部分音乐源可能失效，建议优先使用稳定源\n\n" +
-        "使用方法：\n" +
-        "在插件设置中找到\"用户变量\"\n" +
-        "在\"音乐源\"输入框中输入平台代码（如：netease）\n" +
-        "留空则默认使用 netease",
-
-    // Fixed source: Apple Music
-    // Supported search types
-    supportedSearchType: ["music", "album", "artist"],
-
-    // Plugin methods
-    search,
-    getMediaSource,
-    getLyric,
-    getAlbumInfo,
-    getArtistWorks,
-    getMusicInfo
+  platform: PLATFORM,
+  author: "Toskysun / Sonnets fix",
+  version: "1.1.0",
+  srcUrl: "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/AppleMusic.js",
+  cacheControl: "no-cache",
+  description: PLATFORM + " source for Sonnets using GD Studio's current signed API.",
+  supportedSearchType: ["music"],
+  search,
+  getMediaSource,
+  getLyric,
+  getMusicInfo
 };

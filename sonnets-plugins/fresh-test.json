@@ -4,12 +4,12 @@
     {
       "name": "YT Music Fresh",
       "url": "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/YTMusicFresh.js",
-      "version": "2.3.0"
+      "version": "2.3.1"
     },
     {
       "name": "Apple Catalog Fresh",
       "url": "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/AppleCatalogFresh.js",
-      "version": "2.3.0"
+      "version": "2.3.1"
     }
   ]
 }

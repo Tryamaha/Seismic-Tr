@@ -1,0 +1,15 @@
+{
+  "desc": "Sonnets clean v2.4 test source",
+  "plugins": [
+    {
+      "name": "YT Music Full Test",
+      "url": "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/YTMusicFull240.js",
+      "version": "2.4.0"
+    },
+    {
+      "name": "Apple Full Test",
+      "url": "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/AppleFull240.js",
+      "version": "2.4.0"
+    }
+  ]
+}

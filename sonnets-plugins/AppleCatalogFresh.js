@@ -344,6 +344,14 @@ async function search(query, page = 1, type) {
 }
 
 async function getMediaSource(item) {
+  const title = item && item.title;
+  const artist = item && item.artist;
+  if (title) {
+    try {
+      const full = await __fullTrackFallback(title, artist);
+      if (full && full.url) return full;
+    } catch (_) {}
+  }
   return item && item._previewUrl ? { url: item._previewUrl } : null;
 }
 
@@ -384,7 +392,7 @@ async function getLyric(item) {
 module.exports = {
   platform: "Apple Catalog Fresh",
   author: "Fresh test",
-  version: "2.3.0",
+  version: "2.3.1",
   srcUrl: "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/AppleCatalogFresh.js",
   cacheControl: "no-cache",
   supportedSearchType: ["music", "album", "artist", "sheet", "lyric"],

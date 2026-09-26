@@ -1,0 +1,15 @@
+{
+  "desc": "Sonnets — Apple Music + YouTube Music",
+  "plugins": [
+    {
+      "name": "Apple Music",
+      "url": "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/AppleMusic.js",
+      "version": "1.0.1"
+    },
+    {
+      "name": "YouTube Music",
+      "url": "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/YouTubeMusic.js",
+      "version": "1.0.1"
+    }
+  ]
+}

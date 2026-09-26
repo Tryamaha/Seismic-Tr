@@ -1,5 +1,6 @@
 "use strict";
-const axios = require("axios");\n
+const axios = require("axios");
+
 /* ===== Full-track fallback engine: SoundCloud -> Audiomack -> YouTube ===== */
 let __scClient = null;
 let __scClientTs = 0;
@@ -392,7 +393,7 @@ async function getLyric(item) {
 module.exports = {
   platform: "Apple Catalog Fresh",
   author: "Fresh test",
-  version: "2.3.1",
+  version: "2.3.2",
   srcUrl: "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/AppleCatalogFresh.js",
   cacheControl: "no-cache",
   supportedSearchType: ["music", "album", "artist", "sheet", "lyric"],

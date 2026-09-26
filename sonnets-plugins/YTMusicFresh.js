@@ -352,6 +352,14 @@ function getQuality(label) {
 }
 
 async function getMediaSource(musicItem, quality) {
+  try {
+    const sc = await __soundCloudFallback(musicItem && musicItem.title, musicItem && musicItem.artist);
+    if (sc && sc.url) return sc;
+  } catch (_) {}
+  try {
+    const am = await __audiomackFallback(musicItem && musicItem.title, musicItem && musicItem.artist);
+    if (am && am.url) return am;
+  } catch (_) {}
   if (musicItem.id === cacheMediaSource.id && cacheMediaSource.urls[quality]) {
     return { url: cacheMediaSource.urls[quality] };
   }
@@ -451,7 +459,7 @@ async function getLyric(item) {
 module.exports = {
   platform: "YT Music Fresh",
   author: "Fresh test",
-  version: "2.3.0",
+  version: "2.3.1",
   srcUrl: "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/YTMusicFresh.js",
   cacheControl: "no-cache",
   supportedSearchType: ["music", "album", "artist", "sheet", "lyric"],

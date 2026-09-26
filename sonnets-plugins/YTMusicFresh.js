@@ -101,6 +101,25 @@ async function search(query, page, type) {
     return { isEnd: true, data };
   }
 
+  if (type === "sheet") {
+    const r = await searchMusic(query + " playlist", 1);
+    const first = (r.data || [])[0] || {};
+    return {
+      isEnd: true,
+      data: [{
+        id: "ytmix:" + query,
+        title: "YT Mix: " + query,
+        artist: "YT Music Fresh",
+        artwork: first.artwork || null,
+        worksNum: (r.data || []).length,
+        description: "YouTube arama sonuçlarından oluşturulan dinamik liste",
+        _query: query
+      }]
+    };
+  }
+
+  if (type === "lyric") return await searchLyric(query);
+
   if (type === "album") {
     const r = await searchMusic(query + " album", 1);
     const data = (r.data || []).map(s => ({
@@ -186,15 +205,54 @@ async function getAlbumInfo(albumItem, page = 1) {
   return { isEnd: r.isEnd, musicList: r.data || [] };
 }
 
+async function searchLyric(query) {
+  try {
+    const r = await axios.get("https://lrclib.net/api/search", {
+      params: { q: query },
+      headers: { "User-Agent": "Sonnets-YTMusic-Lyrics/2.2" },
+      timeout: 10000
+    });
+    const rows = Array.isArray(r.data) ? r.data : [];
+    return {
+      isEnd: true,
+      data: rows.filter(x => !x.instrumental).map(x => ({
+        id: "lrclib:" + String(x.id),
+        title: x.trackName || "",
+        artist: x.artistName || "",
+        album: x.albumName || "",
+        rawLrcTxt: x.syncedLyrics || x.plainLyrics || "",
+        _rawLrc: x.syncedLyrics || x.plainLyrics || ""
+      }))
+    };
+  } catch (_) {
+    return { isEnd: true, data: [] };
+  }
+}
+
+async function getMusicSheetInfo(sheet, page = 1) {
+  const q = (sheet && sheet._query) || (sheet && sheet.title) || "";
+  if (!q) return { isEnd: true, musicList: [] };
+  const r = await searchMusic(q, page);
+  return { isEnd: r.isEnd, musicList: r.data || [] };
+}
+
+async function getLyric(item) {
+  if (item && item._rawLrc) return { rawLrc: item._rawLrc };
+  if (item && item.rawLrcTxt) return { rawLrc: item.rawLrcTxt };
+  return null;
+}
+
 module.exports = {
   platform: "YT Music Fresh",
   author: "Fresh test",
-  version: "2.1.0",
+  version: "2.2.0",
   srcUrl: "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/YTMusicFresh.js",
   cacheControl: "no-cache",
-  supportedSearchType: ["music", "album", "artist"],
+  supportedSearchType: ["music", "album", "artist", "sheet", "lyric"],
   search,
   getMediaSource,
   getArtistWorks,
-  getAlbumInfo
+  getAlbumInfo,
+  getMusicSheetInfo,
+  getLyric
 };

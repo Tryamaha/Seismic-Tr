@@ -1,0 +1,15 @@
+{
+  "desc": "Sonnets fresh test — bypasses existing plugin cache",
+  "plugins": [
+    {
+      "name": "YT Music Fresh",
+      "url": "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/YTMusicFresh.js",
+      "version": "2.0.0"
+    },
+    {
+      "name": "Apple Catalog Fresh",
+      "url": "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/AppleCatalogFresh.js",
+      "version": "2.0.0"
+    }
+  ]
+}

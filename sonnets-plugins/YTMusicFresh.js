@@ -1,5 +1,6 @@
 "use strict";
-const axios = require("axios");\n
+const axios = require("axios");
+
 /* ===== Full-track fallback engine: SoundCloud -> Audiomack -> YouTube ===== */
 let __scClient = null;
 let __scClientTs = 0;
@@ -459,7 +460,7 @@ async function getLyric(item) {
 module.exports = {
   platform: "YT Music Fresh",
   author: "Fresh test",
-  version: "2.3.1",
+  version: "2.3.2",
   srcUrl: "https://raw.githubusercontent.com/Tryamaha/Seismic-Tr/main/sonnets-plugins/YTMusicFresh.js",
   cacheControl: "no-cache",
   supportedSearchType: ["music", "album", "artist", "sheet", "lyric"],
